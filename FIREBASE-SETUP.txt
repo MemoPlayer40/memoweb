@@ -1,0 +1,20 @@
+FIREBASE SETUP FOR MEMO WEB
+
+1. Open Firebase Console: https://console.firebase.google.com/
+2. Create or open your Firebase project.
+3. Click the gear icon -> Project settings.
+4. In Your apps, add/select a Web app (</>).
+5. Under SDK setup and configuration choose Config.
+6. Copy these values into firebase-config.js:
+   apiKey
+   authDomain
+   projectId
+   storageBucket
+   messagingSenderId
+   appId
+7. In Firebase Console open Authentication -> Sign-in method.
+8. Enable Email/Password and save.
+9. Add your GitHub Pages domain to Authentication -> Settings -> Authorized domains if Firebase asks for it.
+
+IMPORTANT:
+The Firebase Web Config is not your password. Do not put a GitHub password or secret key in this file.
