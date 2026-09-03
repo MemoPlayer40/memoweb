@@ -1,46 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-  <title>Memo Player</title>
-  <link rel="icon" type="image/png" href="logo.png">
-  <link rel="stylesheet" href="style.css">
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-E4MQNLDNNH"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memo Player</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="stylesheet" href="style.css">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-E4MQNLDNNH"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-E4MQNLDNNH');
     </script>
   </head>
   <body>
-      <div class="main">
-          <img src="images/logo.png"
-          width="110">
-          <h1 style="color: rgb(210, 210, 210);">Welcome To Memo Web</h1>
+    <div class="main">
+      <img src="images/logo.png" width="110" alt="Memo Player logo">
+      <h1 style="color: rgb(210, 210, 210);">Welcome To Memo Web</h1>
+    </div>
+
+    <div class="auth-area">
+      <div id="authLinks">
+        <a class="auth-button" href="signup.html">Sign Up</a>
+        <a class="auth-button" href="login.html">Login</a>
       </div>
-      <div class="links"
-      style="text-align: center">
-              <h2>My Webs</h2>
-              <a href="https://www.twitch.tv/memo_player" target="_blank">Twitch</a>
-              <a href="https://www.facebook.com/omarWAEL11271" target="_blank">Facebook</a>
-              <a href="https://www.instagram.com/memoplayer40/" target="_blank">Instagram</a>
-              <a href="https://discordapp.com/users/1496444659126243341" target="_blank">Discord Account</a>
-              <a href="https://discord.gg/ZnKPW924K" target="_blank">Discord Server</a>
-              <a href="https://www.youtube.com/@MemoPlayer" target="_blank">Youtube</a>
-              <a href="https://www.tiktok.com/@memo.player" target="_blank">Tiktok</a>
-              <a href="https://chat.whatsapp.com/Bf5UHwGP2PQK7qWh22Ndqa" target="_blank">WhatsApp Group</a>
-      </div>
-      <div class="favorite"
-      style="color: rgb(207, 207, 207);">
-          <h1>My Favorites</h1>
-          <h2>Foods : kolkas . burgur . pizza ...</h2>
-          <h2>Anime : oshi noko . naruto . dragon ball . black cat ...</h2>
-          <h2>Charactar : goku . black cat . naruto . killua . pomni . jax</h2>
-          <h2>Song Groups : BTS . BlackPink . FIFTY FIFTY ...</h2>
-          <h2>Youtubers : Solom . ...</h2>
-          <h2>Vtubers : Meowlyva . Elrassem . Ofes . MohamOverKill . ButterFlyGirl . GetTheMoon</h2>
-      </div>
-      <script class="js" src="script.js"></script>
+      <p id="userStatus">Not logged in</p>
+      <button id="logoutBtn" class="auth-button" style="display:none;">Logout</button>
+    </div>
+
+    <div class="links" style="text-align: center">
+      <h2>My Webs</h2>
+      <a href="https://www.twitch.tv/memo_player" target="_blank" rel="noopener">Twitch</a>
+      <a href="https://www.facebook.com/omarWAEL11271" target="_blank" rel="noopener">Facebook</a>
+      <a href="https://www.instagram.com/memoplayer40/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://discordapp.com/users/1496444659126243341" target="_blank" rel="noopener">Discord Account</a>
+      <a href="https://discord.gg/ZnKPW924K" target="_blank" rel="noopener">Discord Server</a>
+      <a href="https://www.youtube.com/@MemoPlayer" target="_blank" rel="noopener">Youtube</a>
+      <a href="https://www.tiktok.com/@memo.player" target="_blank" rel="noopener">Tiktok</a>
+      <a href="https://chat.whatsapp.com/Bf5UHwGP2PQK7qWh22Ndqa" target="_blank" rel="noopener">WhatsApp Group</a>
+    </div>
+
+    <div class="favorite" style="color: rgb(207, 207, 207);">
+      <h1>My Favorites</h1>
+      <h2>Foods : kolkas . burgur . pizza ...</h2>
+      <h2>Anime : oshi noko . naruto . dragon ball . black cat ...</h2>
+      <h2>Charactar : goku . black cat . naruto . killua . pomni . jax</h2>
+      <h2>Song Groups : BTS . BlackPink . FIFTY FIFTY ...</h2>
+      <h2>Youtubers : Solom . ...</h2>
+      <h2>Vtubers : Meowlyva . Elrassem . Ofes . MohamOverKill . ButterFlyGirl . GetTheMoon</h2>
+    </div>
+
+    <script type="module" src="auth.js"></script>
+    <script src="script.js"></script>
   </body>
 </html>

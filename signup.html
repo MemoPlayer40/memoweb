@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - Memo Player</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="auth-box">
+    <h1>Sign Up</h1>
+    <form id="signupForm">
+      <input id="realName" type="text" placeholder="Real Name" autocomplete="name" required>
+      <input id="nickname" type="text" placeholder="Nickname" autocomplete="nickname" required>
+      <input id="email" type="email" placeholder="Email" autocomplete="email" required>
+      <input id="password" type="password" placeholder="Password (6+ characters)" minlength="6" autocomplete="new-password" required>
+      <button type="submit">Create Account</button>
+    </form>
+
+    <div class="social-login">
+      <p>Or sign up with</p>
+      <button id="googleBtn" type="button">Continue with Google</button>
+      <button id="githubBtn" type="button">Continue with GitHub</button>
+      <button id="discordBtn" type="button">Continue with Discord</button>
+    </div>
+
+    <p id="message"></p>
+    <p>Already have an account? <a href="login.html">Login</a></p>
+    <p><a href="index.html">Back to Memo Web</a></p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      GoogleAuthProvider,
+      GithubAuthProvider,
+      signInWithPopup,
+      signInWithCustomToken,
+      updateProfile
+    } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+    import { firebaseConfig } from "./firebase-config.js";
+    import { saveProfile } from "./profile.js";
+    import { discordAuthUrl } from "./discord-auth-config.js";
+
+    const auth = getAuth(initializeApp(firebaseConfig));
+    const form = document.getElementById("signupForm");
+    const message = document.getElementById("message");
+
+    async function finishSocialSignup(provider) {
+      message.textContent = "Connecting...";
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        const realName = prompt("Enter your real name:");
+        if (!realName || !realName.trim()) {
+          await auth.signOut();
+          message.textContent = "Real name is required.";
+          return;
+        }
+        const nickname = prompt("Enter your nickname:") || user.displayName || "";
+        if (!nickname.trim()) {
+          await auth.signOut();
+          message.textContent = "Nickname is required.";
+          return;
+        }
+        await updateProfile(user, { displayName: nickname.trim() });
+        await saveProfile(user, realName.trim(), nickname.trim());
+        window.location.href = "index.html";
+      } catch (error) {
+        message.textContent = error.message;
+      }
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const realName = document.getElementById("realName").value.trim();
+      const nickname = document.getElementById("nickname").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      if (!realName || !nickname) {
+        message.textContent = "Real name and nickname are required.";
+        return;
+      }
+      message.textContent = "Creating account...";
+      try {
+        const result = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(result.user, { displayName: nickname });
+        await saveProfile(result.user, realName, nickname);
+        window.location.href = "index.html";
+      } catch (error) {
+        message.textContent = error.message;
+      }
+    });
+
+    function discordSignup() {
+      message.textContent = "Opening Discord...";
+      const popup = window.open(`${discordAuthUrl}/discordLogin`, "discordSignup", "width=520,height=720,resizable=yes,scrollbars=yes");
+      if (!popup) message.textContent = "Please allow popups for this site.";
+    }
+
+    window.addEventListener("message", async (event) => {
+      if (event.origin !== new URL(discordAuthUrl).origin) return;
+      if (event.data?.type !== "DISCORD_FIREBASE_TOKEN" || !event.data.token) return;
+      message.textContent = "Finishing Discord signup...";
+      try {
+        const result = await signInWithCustomToken(auth, event.data.token);
+        const user = result.user;
+        const realName = prompt("Enter your real name:");
+        if (!realName || !realName.trim()) {
+          await auth.signOut();
+          message.textContent = "Real name is required.";
+          return;
+        }
+        const nickname = prompt("Enter your nickname:") || user.displayName || "Discord User";
+        if (!nickname.trim()) {
+          await auth.signOut();
+          message.textContent = "Nickname is required.";
+          return;
+        }
+        await updateProfile(user, { displayName: nickname.trim() });
+        await saveProfile(user, realName.trim(), nickname.trim());
+        window.location.href = "index.html";
+      } catch (error) {
+        message.textContent = error.message;
+      }
+    });
+
+    document.getElementById("googleBtn").addEventListener("click", () => finishSocialSignup(new GoogleAuthProvider()));
+    document.getElementById("githubBtn").addEventListener("click", () => finishSocialSignup(new GithubAuthProvider()));
+    document.getElementById("discordBtn").addEventListener("click", discordSignup);
+  </script>
+</body>
+</html>
