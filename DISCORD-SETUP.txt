@@ -1,0 +1,57 @@
+SECURE DISCORD LOGIN SETUP
+
+This project uses Discord OAuth2 Authorization Code flow on Firebase Cloud Functions.
+The Discord Client Secret is NEVER placed in the website or GitHub repository.
+
+1) Firebase
+- Install/login to Firebase CLI on your computer.
+- From this repository folder run:
+  firebase login
+  firebase use YOUR_FIREBASE_PROJECT_ID
+- Install backend dependencies:
+  cd functions
+  npm install
+  cd ..
+
+2) Discord Developer Portal
+- Create/open your Discord application.
+- Open OAuth2.
+- Copy the Client ID.
+- Copy/regenerate the Client Secret. NEVER commit it to GitHub.
+- Deploy the Firebase function first so you know its host.
+
+3) Store Discord secrets in Firebase
+Run from the repository root:
+  firebase functions:secrets:set DISCORD_CLIENT_ID
+  firebase functions:secrets:set DISCORD_CLIENT_SECRET
+
+Paste the Discord Client ID and Client Secret only when the CLI asks for them.
+Do not put either value in firebase-config.js, JavaScript files, GitHub Secrets for this frontend, or Discord HTML.
+
+4) Deploy the backend
+  firebase deploy --only functions,firestore
+
+The function URL will look like:
+  https://us-central1-YOUR_FIREBASE_PROJECT_ID.cloudfunctions.net/discordAuth
+
+5) Discord Redirect URI
+In Discord Developer Portal -> OAuth2 -> Redirects, add exactly:
+  https://us-central1-YOUR_FIREBASE_PROJECT_ID.cloudfunctions.net/discordAuth/discordCallback
+
+6) Web origin
+The backend defaults to:
+  https://memoplayer40.github.io
+If your GitHub Pages site uses a different origin, set it before deployment:
+  firebase functions:config:set web.origin="https://YOUR-DOMAIN"
+
+Note: with Firebase parameterized configuration, the easiest supported option is to change WEB_ORIGIN's default in functions/index.js before deployment if your site uses a different origin.
+
+7) How the secure flow works
+- The website opens the backend in a popup.
+- The backend creates a random OAuth state and stores it in a Secure, HttpOnly cookie.
+- Discord receives only the public Client ID and redirects back with an authorization code.
+- The backend validates state and exchanges the code using the private Client Secret.
+- The backend gets the Discord user ID, creates a Firebase custom token, and sends it to the opener with postMessage restricted to WEB_ORIGIN.
+- The browser signs in with signInWithCustomToken().
+
+Do not publish service-account JSON files, Discord Client Secrets, Discord bot tokens, or other private keys.
