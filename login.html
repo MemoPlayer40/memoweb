@@ -11,10 +11,17 @@
   <div class="auth-box">
     <h1>Login</h1>
     <form id="loginForm">
-      <input id="email" type="email" placeholder="Email" required>
-      <input id="password" type="password" placeholder="Password" required>
+      <input id="email" type="email" placeholder="Email" autocomplete="email" required>
+      <input id="password" type="password" placeholder="Password" autocomplete="current-password" required>
       <button type="submit">Login</button>
     </form>
+
+    <div class="social-login">
+      <p>Or login with</p>
+      <button id="googleBtn" type="button">Continue with Google</button>
+      <button id="githubBtn" type="button">Continue with GitHub</button>
+    </div>
+
     <p id="message"></p>
     <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
     <p><a href="index.html">Back to Memo Web</a></p>
@@ -22,8 +29,15 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      GoogleAuthProvider,
+      GithubAuthProvider,
+      signInWithPopup
+    } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
     import { firebaseConfig } from "./firebase-config.js";
+    import { saveProfile } from "./profile.js";
 
     const auth = getAuth(initializeApp(firebaseConfig));
     const form = document.getElementById("loginForm");
@@ -39,6 +53,32 @@
         message.textContent = error.message;
       }
     });
+
+    async function socialLogin(provider) {
+      message.textContent = "Connecting...";
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        const nickname = user.displayName || "";
+        const realName = prompt("Enter your real name:");
+        if (!realName || !realName.trim()) {
+          message.textContent = "Real name is required.";
+          return;
+        }
+        const enteredNickname = prompt("Enter your nickname:") || nickname;
+        if (!enteredNickname.trim()) {
+          message.textContent = "Nickname is required.";
+          return;
+        }
+        await saveProfile(user, realName.trim(), enteredNickname.trim());
+        window.location.href = "index.html";
+      } catch (error) {
+        message.textContent = error.message;
+      }
+    }
+
+    document.getElementById("googleBtn").addEventListener("click", () => socialLogin(new GoogleAuthProvider()));
+    document.getElementById("githubBtn").addEventListener("click", () => socialLogin(new GithubAuthProvider()));
   </script>
 </body>
 </html>
