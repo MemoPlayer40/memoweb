@@ -11,10 +11,19 @@
   <div class="auth-box">
     <h1>Sign Up</h1>
     <form id="signupForm">
-      <input id="email" type="email" placeholder="Email" required>
-      <input id="password" type="password" placeholder="Password (6+ characters)" minlength="6" required>
+      <input id="realName" type="text" placeholder="Real Name" autocomplete="name" required>
+      <input id="nickname" type="text" placeholder="Nickname" autocomplete="nickname" required>
+      <input id="email" type="email" placeholder="Email" autocomplete="email" required>
+      <input id="password" type="password" placeholder="Password (6+ characters)" minlength="6" autocomplete="new-password" required>
       <button type="submit">Create Account</button>
     </form>
+
+    <div class="social-login">
+      <p>Or sign up with</p>
+      <button id="googleBtn" type="button">Continue with Google</button>
+      <button id="githubBtn" type="button">Continue with GitHub</button>
+    </div>
+
     <p id="message"></p>
     <p>Already have an account? <a href="login.html">Login</a></p>
     <p><a href="index.html">Back to Memo Web</a></p>
@@ -22,23 +31,80 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      GoogleAuthProvider,
+      GithubAuthProvider,
+      signInWithPopup,
+      updateProfile
+    } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
     import { firebaseConfig } from "./firebase-config.js";
+    import { saveProfile } from "./profile.js";
 
     const auth = getAuth(initializeApp(firebaseConfig));
     const form = document.getElementById("signupForm");
     const message = document.getElementById("message");
+    const googleBtn = document.getElementById("googleBtn");
+    const githubBtn = document.getElementById("githubBtn");
+
+    async function finishSocialSignup(provider) {
+      message.textContent = "Connecting...";
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        let nickname = user.displayName || "";
+        let realName = "";
+
+        const enteredRealName = prompt("Enter your real name:");
+        if (!enteredRealName || !enteredRealName.trim()) {
+          await auth.signOut();
+          message.textContent = "Real name is required.";
+          return;
+        }
+
+        const enteredNickname = prompt("Enter your nickname:");
+        if (!enteredNickname || !enteredNickname.trim()) {
+          await auth.signOut();
+          message.textContent = "Nickname is required.";
+          return;
+        }
+
+        realName = enteredRealName.trim();
+        nickname = enteredNickname.trim();
+        await updateProfile(user, { displayName: nickname });
+        await saveProfile(user, realName, nickname);
+        window.location.href = "index.html";
+      } catch (error) {
+        message.textContent = error.message;
+      }
+    }
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
+      const realName = document.getElementById("realName").value.trim();
+      const nickname = document.getElementById("nickname").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (!realName || !nickname) {
+        message.textContent = "Real name and nickname are required.";
+        return;
+      }
+
       message.textContent = "Creating account...";
       try {
-        await createUserWithEmailAndPassword(auth, email.value, password.value);
+        const result = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(result.user, { displayName: nickname });
+        await saveProfile(result.user, realName, nickname);
         window.location.href = "index.html";
       } catch (error) {
         message.textContent = error.message;
       }
     });
+
+    googleBtn.addEventListener("click", () => finishSocialSignup(new GoogleAuthProvider()));
+    githubBtn.addEventListener("click", () => finishSocialSignup(new GithubAuthProvider()));
   </script>
 </body>
 </html>
