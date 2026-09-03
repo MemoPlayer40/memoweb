@@ -80,12 +80,6 @@
 
 
 
-        const nickname = prompt("Enter your nickname:") || user.displayName || "Discord User";
-        if (!nickname.trim()) {
-          await auth.signOut();
-          message.textContent = "Nickname is required.";
-          return;
-        }
         await saveProfile(user, realName.trim(), nickname.trim());
         window.location.href = "index.html";
       } catch (error) {
@@ -95,7 +89,6 @@
 
     document.getElementById("googleBtn").addEventListener("click", () => socialLogin(new GoogleAuthProvider()));
     document.getElementById("githubBtn").addEventListener("click", () => socialLogin(new GithubAuthProvider()));
-    document.getElementById("discordBtn").addEventListener("click", discordLogin);
   </script>
 </body>
 </html>
