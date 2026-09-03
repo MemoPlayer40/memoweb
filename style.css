@@ -87,8 +87,11 @@ body {
 }
 .social-login button {
   background-color: rgb(255, 255, 255);
-  padding: 15px;
-  border-radius: 8px;
+  padding: 10px;
+  border-radius: 25px;
+  font-family: "Roboto Mono", monospace;
+  border: 1px;
+  border-color: #000000
 .auth-box a {
   color: #81d800;
 }
