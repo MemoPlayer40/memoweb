@@ -35,11 +35,9 @@
       GoogleAuthProvider,
       GithubAuthProvider,
       signInWithPopup,
-      signInWithCustomToken
     } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
     import { firebaseConfig } from "./firebase-config.js";
     import { saveProfile } from "./profile.js";
-    import { discordAuthUrl } from "./discord-auth-config.js";
 
     const auth = getAuth(initializeApp(firebaseConfig));
     const form = document.getElementById("loginForm");
@@ -80,30 +78,8 @@
       }
     }
 
-    function discordLogin() {
-      message.textContent = "Opening Discord...";
-      const popup = window.open(
-        `${discordAuthUrl}/discordLogin`,
-        "discordLogin",
-        "width=520,height=720,resizable=yes,scrollbars=yes"
-      );
-      if (!popup) message.textContent = "Please allow popups for this site.";
-    }
 
-    window.addEventListener("message", async (event) => {
-      if (event.origin !== new URL(discordAuthUrl).origin) return;
-      if (event.data?.type !== "DISCORD_FIREBASE_TOKEN" || !event.data.token) return;
 
-      message.textContent = "Finishing Discord login...";
-      try {
-        const result = await signInWithCustomToken(auth, event.data.token);
-        const user = result.user;
-        const realName = prompt("Enter your real name:");
-        if (!realName || !realName.trim()) {
-          await auth.signOut();
-          message.textContent = "Real name is required.";
-          return;
-        }
         const nickname = prompt("Enter your nickname:") || user.displayName || "Discord User";
         if (!nickname.trim()) {
           await auth.signOut();
