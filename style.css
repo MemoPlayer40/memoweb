@@ -85,7 +85,10 @@ body {
 .auth-box button {
   margin: 10px 0;
 }
-
+.social-login button {
+  background-color: rgb(255, 255, 255);
+  padding: 15px;
+  border-radius: 8px;
 .auth-box a {
   color: #81d800;
 }
