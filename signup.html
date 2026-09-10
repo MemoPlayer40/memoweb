@@ -9,82 +9,225 @@
 
   <title>Sign Up - Memo Web</title>
 
-  <style>
+<style>
+  * {
+    box-sizing: border-box;
+  }
 
-    body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: white;
-      margin: 0;
-      padding: 0;
-    }
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
+    font-family: "Courier New", monospace;
+
+    background:
+      linear-gradient(
+        45deg,
+        #0b0b0b 25%,
+        #111 25%,
+        #111 50%,
+        #0b0b0b 50%,
+        #0b0b0b 75%,
+        #111 75%
+      );
+
+    background-size: 16px 16px;
+
+    color: white;
+  }
+
+  .container {
+    width: 90%;
+    max-width: 420px;
+
+    padding: 30px;
+
+    background: #181818;
+
+    border: 4px solid #32c766;
+
+    box-shadow:
+      8px 8px 0 #000,
+      0 0 0 4px #0a0a0a;
+
+    border-radius: 0;
+  }
+
+  h1 {
+    text-align: center;
+
+    margin-top: 0;
+    margin-bottom: 25px;
+
+    font-size: 30px;
+
+    color: #32c766;
+
+    text-shadow:
+      3px 3px 0 #000;
+  }
+
+  input {
+    width: 100%;
+
+    padding: 13px;
+
+    margin: 8px 0;
+
+    font-family: "Courier New", monospace;
+    font-size: 16px;
+
+    color: white;
+    background: #0d0d0d;
+
+    border: 3px solid #555;
+
+    border-radius: 0;
+
+    outline: none;
+
+    box-shadow:
+      4px 4px 0 #000;
+  }
+
+  input:focus {
+    border-color: #32c766;
+
+    box-shadow:
+      4px 4px 0 #32c766;
+  }
+
+  button {
+    width: 100%;
+
+    padding: 13px;
+
+    margin-top: 12px;
+
+    font-family: "Courier New", monospace;
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    border: 3px solid #000;
+
+    border-radius: 0;
+
+    transition:
+      transform 0.08s,
+      box-shadow 0.08s;
+  }
+
+  /* تأثير Pixel عند الضغط */
+  button:active {
+    transform: translate(4px, 4px);
+
+    box-shadow: none !important;
+  }
+
+  /* LOGIN / SIGN UP */
+
+  .login-btn,
+  .signup-btn {
+    background: #32c766;
+    color: #000;
+
+    box-shadow:
+      5px 5px 0 #146b35;
+  }
+
+  .login-btn:hover,
+  .signup-btn:hover {
+    background: #45e078;
+  }
+
+  /* GOOGLE */
+
+  .google-btn {
+    background: #fff;
+    color: #222;
+
+    border-color: #000;
+
+    box-shadow:
+      5px 5px 0 #999;
+  }
+
+  .google-btn:hover {
+    background: #e9e9e9;
+  }
+
+  /* GITHUB */
+
+  .github-btn {
+    background: #24292f;
+    color: white;
+
+    box-shadow:
+      5px 5px 0 #000;
+  }
+
+  .github-btn:hover {
+    background: #343a40;
+  }
+
+  .signup-link,
+  .login-link {
+    text-align: center;
+
+    margin-top: 22px;
+
+    font-size: 14px;
+  }
+
+  a {
+    color: #32c766;
+
+    font-weight: bold;
+
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: #65ef8d;
+
+    text-decoration: underline;
+  }
+
+  #message {
+    text-align: center;
+
+    margin-top: 16px;
+
+    color: #ff7777;
+
+    font-weight: bold;
+  }
+
+  /* للموبايل */
+
+  @media (max-width: 500px) {
     .container {
-      max-width: 420px;
-      margin: 70px auto;
-      padding: 30px;
-      background: #1b1b1b;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      width: 88%;
+
+      padding: 22px;
     }
 
     h1 {
-      text-align: center;
-      margin-bottom: 25px;
+      font-size: 25px;
     }
 
+    button,
     input {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 13px;
-      margin: 8px 0;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
+      font-size: 14px;
     }
-
-    button {
-      width: 100%;
-      padding: 13px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .signup-btn {
-      background: #32c766;
-      color: white;
-    }
-
-    .google-btn {
-      background: white;
-      color: #222;
-      border: 1px solid #ccc;
-    }
-
-    .github-btn {
-      background: #24292f;
-      color: white;
-    }
-
-    .login-link {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    a {
-      color: #32c766;
-    }
-
-    #message {
-      text-align: center;
-      margin-top: 15px;
-      color: #ff7777;
-    }
-
-  </style>
+  }
+</style>
 
 </head>
 
