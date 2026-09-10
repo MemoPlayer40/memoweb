@@ -1,36 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign Up - Memo Player</title>
-  <link rel="icon" type="image/png" href="logo.png">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="auth-box">
-    <h1>Sign Up</h1>
-    <form id="signupForm">
-      <input id="realName" type="text" placeholder="Real Name" autocomplete="name" required>
-      <input id="nickname" type="text" placeholder="Nickname" autocomplete="nickname" required>
-      <input id="email" type="email" placeholder="Email" autocomplete="email" required>
-      <input id="password" type="password" placeholder="Password (6+ characters)" minlength="6" autocomplete="new-password" required>
-      <button type="submit">Create Account</button>
-    </form>
 
-    <div class="social-login">
-      <p>Or sign up with</p>
-      <button id="googleBtn" type="button">Continue with Google</button>
-      <button id="githubBtn" type="button">Continue with GitHub</button>
-    </div>
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Sign Up - Memo Web</title>
+
+  <style>
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 420px;
+      margin: 70px auto;
+      padding: 30px;
+      background: #1b1b1b;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 13px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 13px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .signup-btn {
+      background: #32c766;
+      color: white;
+    }
+
+    .google-btn {
+      background: white;
+      color: #222;
+      border: 1px solid #ccc;
+    }
+
+    .github-btn {
+      background: #24292f;
+      color: white;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    a {
+      color: #32c766;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 15px;
+      color: #ff7777;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>Create Account</h1>
+
+    <input
+      id="realName"
+      type="text"
+      placeholder="Real Name"
+      autocomplete="name"
+    >
+
+    <input
+      id="nickname"
+      type="text"
+      placeholder="Nickname"
+      autocomplete="nickname"
+    >
+
+    <input
+      id="email"
+      type="email"
+      placeholder="Email"
+      autocomplete="email"
+    >
+
+    <input
+      id="password"
+      type="password"
+      placeholder="Password"
+      autocomplete="new-password"
+    >
+
+    <button
+      id="signupBtn"
+      class="signup-btn"
+    >
+      Sign Up
+    </button>
+
+    <button
+      id="googleBtn"
+      class="google-btn"
+    >
+      Continue with Google
+    </button>
+
+    <button
+      id="githubBtn"
+      class="github-btn"
+    >
+      Continue with GitHub
+    </button>
 
     <p id="message"></p>
-    <p>Already have an account? <a href="login.html">Login</a></p>
-    <p><a href="index.html">Back to Memo Web</a></p>
+
+    <div class="login-link">
+
+      Already have an account?
+      <a href="login.html">Login</a>
+
+    </div>
+
   </div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+
+    import {
+      initializeApp
+    } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+
     import {
       getAuth,
       createUserWithEmailAndPassword,
@@ -39,71 +168,185 @@
       signInWithPopup,
       updateProfile
     } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-    import { firebaseConfig } from "./firebase-config.js";
-    import { saveProfile } from "./profile.js";
-    import { discordAuthUrl } from "./discord-auth-config.js";
 
-    const auth = getAuth(initializeApp(firebaseConfig));
-    const form = document.getElementById("signupForm");
-    const message = document.getElementById("message");
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
-    async function finishSocialSignup(provider) {
-      message.textContent = "Connecting...";
-      try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        const realName = prompt("Enter your real name:");
-        if (!realName || !realName.trim()) {
-          await auth.signOut();
-          message.textContent = "Real name is required.";
-          return;
+    import {
+      firebaseConfig
+    } from "./firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+
+    const auth = getAuth(app);
+
+    const db = getFirestore(app);
+
+    const message =
+      document.getElementById("message");
+
+    async function saveProfile(
+      user,
+      realName,
+      nickname
+    ) {
+
+      await updateProfile(user, {
+        displayName: nickname
+      });
+
+      await setDoc(
+        doc(db, "users", user.uid),
+        {
+          realName: realName,
+          nickname: nickname,
+          email: user.email || "",
+          updatedAt: serverTimestamp()
+        },
+        {
+          merge: true
         }
-        const nickname = prompt("Enter your nickname:") || user.displayName || "";
-        if (!nickname.trim()) {
-          await auth.signOut();
-          message.textContent = "Nickname is required.";
-          return;
-        }
-        await updateProfile(user, { displayName: nickname.trim() });
-        await saveProfile(user, realName.trim(), nickname.trim());
-        window.location.href = "index.html";
-      } catch (error) {
-        message.textContent = error.message;
-      }
+      );
+
     }
 
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const realName = document.getElementById("realName").value.trim();
-      const nickname = document.getElementById("nickname").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      if (!realName || !nickname) {
-        message.textContent = "Real name and nickname are required.";
-        return;
-      }
-      message.textContent = "Creating account...";
+    document
+      .getElementById("signupBtn")
+      .addEventListener("click", async () => {
+
+        const realName =
+          document.getElementById("realName")
+            .value.trim();
+
+        const nickname =
+          document.getElementById("nickname")
+            .value.trim();
+
+        const email =
+          document.getElementById("email")
+            .value.trim();
+
+        const password =
+          document.getElementById("password")
+            .value;
+
+        if (
+          !realName ||
+          !nickname ||
+          !email ||
+          !password
+        ) {
+
+          message.textContent =
+            "Please fill in all fields.";
+
+          return;
+        }
+
+        if (password.length < 6) {
+
+          message.textContent =
+            "Password must be at least 6 characters.";
+
+          return;
+        }
+
+        try {
+
+          const result =
+            await createUserWithEmailAndPassword(
+              auth,
+              email,
+              password
+            );
+
+          await saveProfile(
+            result.user,
+            realName,
+            nickname
+          );
+
+          window.location.href = "index.html";
+
+        } catch (error) {
+
+          message.textContent =
+            error.message;
+
+        }
+
+      });
+
+    async function socialSignup(provider) {
+
       try {
-        const result = await createUserWithEmailAndPassword(auth, email, password);
-        await updateProfile(result.user, { displayName: nickname });
-        await saveProfile(result.user, realName, nickname);
-        window.location.href = "index.html";
+
+        const result =
+          await signInWithPopup(
+            auth,
+            provider
+          );
+
+        const realName =
+          prompt("Enter your real name:");
+
+        if (!realName) {
+          return;
+        }
+
+        const nickname =
+          prompt("Enter your nickname:");
+
+        if (!nickname) {
+          return;
+        }
+
+        await saveProfile(
+          result.user,
+          realName,
+          nickname
+        );
+
+        window.location.href =
+          "index.html";
+
       } catch (error) {
-        message.textContent = error.message;
+
+        message.textContent =
+          error.message;
+
       }
-    });
 
+    }
 
-        await updateProfile(user, { displayName: nickname.trim() });
-        await saveProfile(user, realName.trim(), nickname.trim());
-        window.location.href = "index.html";
-      } catch (error) {
-        message.textContent = error.message;
-      }
-    });
+    document
+      .getElementById("googleBtn")
+      .addEventListener("click", () => {
 
-    document.getElementById("googleBtn").addEventListener("click", () => finishSocialSignup(new GoogleAuthProvider()));
-    document.getElementById("githubBtn").addEventListener("click", () => finishSocialSignup(new GithubAuthProvider()));
+        const provider =
+          new GoogleAuthProvider();
+
+        socialSignup(provider);
+
+      });
+
+    document
+      .getElementById("githubBtn")
+      .addEventListener("click", () => {
+
+        const provider =
+          new GithubAuthProvider();
+
+        socialSignup(provider);
+
+      });
+
   </script>
+
 </body>
+
 </html>
